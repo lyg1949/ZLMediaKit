@@ -22,12 +22,14 @@ public:
         // 录制hls
         type_hls = 0,
         // 录制MP4
-        type_mp4 = 1
+        type_mp4 = 1,
+        // 只录制音频
+        type_audio=2
     } type;
 
     /**
      * 获取录制文件绝对路径
-     * @param type hls还是MP4录制
+     * @param type hls还是MP4录制,或者只录制音频
      * @param vhost 虚拟主机
      * @param app 应用名
      * @param stream_id 流id
@@ -38,7 +40,7 @@ public:
 
     /**
      * 创建录制器对象
-     * @param type hls还是MP4录制
+     * @param type hls还是MP4录制,或者只录制音频
      * @param vhost 虚拟主机
      * @param app 应用名
      * @param stream_id 流id
@@ -49,7 +51,7 @@ public:
 
     /**
      * 获取录制状态
-     * @param type hls还是MP4录制
+     * @param type hls还是MP4录制,或者只录制音频
      * @param vhost 虚拟主机
      * @param app 应用名
      * @param stream_id 流id
@@ -59,7 +61,7 @@ public:
 
     /**
      * 开始录制
-     * @param type hls还是MP4录制
+     * @param type hls还是MP4录制,或者只录制音频
      * @param vhost 虚拟主机
      * @param app 应用名
      * @param stream_id 流id
@@ -70,7 +72,7 @@ public:
 
     /**
      * 停止录制
-     * @param type hls还是MP4录制
+     * @param type hls还是MP4录制,或者只录制音频
      * @param vhost 虚拟主机
      * @param app 应用名
      * @param stream_id 流id

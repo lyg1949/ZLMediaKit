@@ -56,6 +56,7 @@ private:
     RtspMediaSourceMuxer::Ptr _rtsp;
     MediaSinkInterface::Ptr _hls;
     MediaSinkInterface::Ptr _mp4;
+    MediaSinkInterface::Ptr _audio;
     Listener *_listener = nullptr;
     std::weak_ptr<MediaSourceEvent> _meida_listener;
     bool _enable_rtxp = false;

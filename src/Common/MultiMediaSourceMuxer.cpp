@@ -106,7 +106,7 @@ bool MultiMuxerPrivate::setupRecord(MediaSource &sender, Recorder::type type, bo
                 //停止录制
                 _hls = nullptr;
             }
-            _enable_record = _hls || _mp4;
+            _enable_record = _hls || _mp4  || _audio;
             return true;
         }
         case Recorder::type_mp4 : {
@@ -117,7 +117,18 @@ bool MultiMuxerPrivate::setupRecord(MediaSource &sender, Recorder::type type, bo
                 //停止录制
                 _mp4 = nullptr;
             }
-            _enable_record = _hls || _mp4;
+            _enable_record = _hls || _mp4  || _audio;
+            return true;
+        }
+        case Recorder::type_audio : {
+            if (start && !_audio) {
+                //开始录制
+                _audio = makeRecorder(getTracks(true), type, custom_path, sender);
+            } else if (!start && _audio) {
+                //停止录制
+                _audio = nullptr;
+            }
+            _enable_record = _hls || _mp4 || _audio;
             return true;
         }
         default : return false;
@@ -131,6 +142,8 @@ bool MultiMuxerPrivate::isRecording(MediaSource &sender, Recorder::type type){
             return _hls ? true : false;
         case Recorder::type_mp4 :
             return _mp4 ? true : false;
+        case Recorder::type_audio :
+            return _audio ? true : false;
         default:
             return false;
     }
@@ -166,6 +179,11 @@ void MultiMuxerPrivate::onTrackReady(const Track::Ptr &track) {
     if (mp4) {
         mp4->addTrack(track);
     }
+
+    auto audio = _audio;
+    if (audio) {
+        audio->addTrack(track);
+    }
 }
 
 bool MultiMuxerPrivate::isEnabled(){
@@ -188,6 +206,11 @@ void MultiMuxerPrivate::onTrackFrame(const Frame::Ptr &frame) {
     auto mp4 = _mp4;
     if (mp4) {
         mp4->inputFrame(frame);
+    }
+
+    auto audio = _audio;
+    if (audio) {
+        audio->inputFrame(frame);
     }
 }
 

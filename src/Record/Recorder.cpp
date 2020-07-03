@@ -13,6 +13,7 @@
 #include "Common/MediaSource.h"
 #include "MP4Recorder.h"
 #include "HlsRecorder.h"
+#include "AudioRecorder.h"
 
 using namespace toolkit;
 
@@ -50,6 +51,21 @@ string Recorder::getRecordPath(Recorder::type type, const string &vhost, const s
             }
             return File::absolutePath(mp4FilePath, recordPath);
         }
+        case Recorder::type_audio: {
+            GET_CONFIG(string, recordPath, Record::kFilePath);
+            GET_CONFIG(string, recordAppName, Record::kAppName);
+            string audioFilePath;
+            if (enableVhost) {
+                audioFilePath = vhost + "/" + recordAppName + "/" + app + "/" + stream_id + "/";
+            } else {
+                audioFilePath = recordAppName + "/" + app + "/" + stream_id + "/";
+            }
+            //Here we use the customized file path.
+            if (!customized_path.empty()) {
+                audioFilePath = customized_path + "/";
+            }
+            return File::absolutePath(audioFilePath, recordPath);
+        }
         default:
             return "";
     }
@@ -73,6 +89,8 @@ std::shared_ptr<MediaSinkInterface> Recorder::createRecorder(type type, const st
 #endif
             return nullptr;
         }
+        case Recorder::type_audio:
+            return std::make_shared<AudioRecorder>(path, vhost, app, stream_id);
 
         default:
             return nullptr;

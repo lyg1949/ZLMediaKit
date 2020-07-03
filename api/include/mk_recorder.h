@@ -44,11 +44,11 @@ API_EXPORT void API_CALL mk_flv_recorder_release(mk_flv_recorder ctx);
  */
 API_EXPORT int API_CALL mk_flv_recorder_start(mk_flv_recorder ctx, const char *vhost, const char *app, const char *stream, const char *file_path);
 
-///////////////////////////////////////////hls/mp4录制/////////////////////////////////////////////
+///////////////////////////////////////////hls/mp4/音频录制/////////////////////////////////////////////
 
 /**
  * 获取录制状态
- * @param type 0:hls,1:MP4
+ * @param type 0:hls,1:MP4,2:音频
  * @param vhost 虚拟主机
  * @param app 应用名
  * @param stream 流id
@@ -58,7 +58,7 @@ API_EXPORT int API_CALL mk_recorder_is_recording(int type, const char *vhost, co
 
 /**
  * 开始录制
- * @param type 0:hls,1:MP4
+ * @param type 0:hls,1:MP4,2:音频
  * @param vhost 虚拟主机
  * @param app 应用名
  * @param stream 流id
@@ -69,7 +69,7 @@ API_EXPORT int API_CALL mk_recorder_start(int type, const char *vhost, const cha
 
 /**
  * 停止录制
- * @param type 0:hls,1:MP4
+ * @param type 0:hls,1:MP4,2:音频
  * @param vhost 虚拟主机
  * @param app 应用名
  * @param stream 流id
