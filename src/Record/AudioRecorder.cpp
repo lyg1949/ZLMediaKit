@@ -26,7 +26,6 @@ AudioRecorder::AudioRecorder(const string& strPath,
     _strAppName = strApp;
     _strStreamId = strStreamId;
     _strVhost = strVhost;
-    _strFolder = strPath;
 }
 AudioRecorder::~AudioRecorder() {
     closeFile();
@@ -38,17 +37,6 @@ void AudioRecorder::createFile() {
     auto strTime = getTimeStr("%H-%M-%S");
     auto strFileTmp = _strPath + strDate + "/." + strTime + strExt;
     auto strFile =	_strPath + strDate + "/" + strTime + strExt;
-
-    /////record 业务逻辑//////
-   // _info.ui64StartedTime = ::time(NULL);
-    //_info.strFileName = strTime + _info.strExt;
-   // _info.strFilePath = strFile;
-    GET_CONFIG(string,appName,Record::kAppName);
-   // _info.strUrl = appName + "/"
-   //                + _info.strAppName + "/"
-   //                + _info.strStreamId + "/"
-   //                + strDate + "/"
-   //                + strTime + _info.strExt;
 
     try {
         _file = shared_ptr<FILE>(File::create_file(strFileTmp.data(), "wb"), [](FILE *fp) {
@@ -66,13 +54,8 @@ void AudioRecorder::createFile() {
 
 void AudioRecorder::closeFile() {
     if (_file) {
-        //_info.ui64TimeLen = ::time(NULL) - _info.ui64StartedTime;
         _file.reset();
         rename(_strFileTmp.data(),_strFile.data());
-        //struct stat fileData;
-        //stat(_strFile.data(), &fileData);
-        //_info.ui64FileSize = fileData.st_size;
-        ///广播？？
     }
 }
 
