@@ -189,14 +189,10 @@ void RtspSession::onRtpPacket(const char *data, uint64_t len) {
     uint8_t interleaved = data[1];
     if(interleaved %2 == 0){
         trackIdx = getTrackIndexByInterleaved(interleaved);
-        if (trackIdx != -1) {
-            handleOneRtp(trackIdx,_aTrackInfo[trackIdx],(unsigned char *)data + 4, len - 4);
-        }
+        handleOneRtp(trackIdx, _aTrackInfo[trackIdx]->_type, _aTrackInfo[trackIdx]->_samplerate, (unsigned char *) data + 4, len - 4);
     }else{
         trackIdx = getTrackIndexByInterleaved(interleaved - 1);
-        if (trackIdx != -1) {
-            onRtcpPacket(trackIdx, _aTrackInfo[trackIdx], (unsigned char *) data + 4, len - 4);
-        }
+        onRtcpPacket(trackIdx, _aTrackInfo[trackIdx], (unsigned char *) data + 4, len - 4);
     }
 }
 
@@ -218,7 +214,7 @@ void RtspSession::handleReq_Options(const Parser &parser) {
 }
 
 void RtspSession::handleReq_ANNOUNCE(const Parser &parser) {
-    auto src = dynamic_pointer_cast<RtmpMediaSource>(MediaSource::find(RTSP_SCHEMA,
+    auto src = dynamic_pointer_cast<RtspMediaSource>(MediaSource::find(RTSP_SCHEMA,
                                                                        _mediaInfo._vhost,
                                                                        _mediaInfo._app,
                                                                        _mediaInfo._streamid));
@@ -624,10 +620,6 @@ void RtspSession::handleReq_Setup(const Parser &parser) {
         controlSuffix = controlSuffix.substr(1);
     }
     int trackIdx = getTrackIndexByControlSuffix(controlSuffix);
-    if (trackIdx == -1) {
-        //未找到相应track
-        throw SockException(Err_shutdown, StrPrinter << "can not find any track by control suffix:" << controlSuffix);
-    }
     SdpTrack::Ptr &trackRef = _aTrackInfo[trackIdx];
     if (trackRef->_inited) {
         //已经初始化过该Track
@@ -930,7 +922,8 @@ inline void RtspSession::onRcvPeerUdpData(int intervaled, const Buffer::Ptr &pBu
     if(intervaled % 2 == 0){
         if(_pushSrc){
             //这是rtsp推流上来的rtp包
-            handleOneRtp(intervaled / 2,_aTrackInfo[intervaled / 2],( unsigned char *)pBuf->data(),pBuf->size());
+            auto &ref = _aTrackInfo[intervaled / 2];
+            handleOneRtp(intervaled / 2, ref->_type, ref->_samplerate, (unsigned char *) pBuf->data(), pBuf->size());
         }else if(!_udpSockConnected.count(intervaled)){
             //这是rtsp播放器的rtp打洞包
             _udpSockConnected.emplace(intervaled);
@@ -1068,15 +1061,6 @@ bool RtspSession::sendRtspResponse(const string &res_code,
     return sendRtspResponse(res_code,header_map,sdp,protocol);
 }
 
-inline string RtspSession::printSSRC(uint32_t ui32Ssrc) {
-    char tmp[9] = { 0 };
-    ui32Ssrc = htonl(ui32Ssrc);
-    uint8_t *pSsrc = (uint8_t *) &ui32Ssrc;
-    for (int i = 0; i < 4; i++) {
-        sprintf(tmp + 2 * i, "%02X", pSsrc[i]);
-    }
-    return tmp;
-}
 inline int RtspSession::getTrackIndexByTrackType(TrackType type) {
     for (unsigned int i = 0; i < _aTrackInfo.size(); i++) {
         if (type == _aTrackInfo[i]->_type) {
@@ -1086,7 +1070,7 @@ inline int RtspSession::getTrackIndexByTrackType(TrackType type) {
     if(_aTrackInfo.size() == 1){
         return 0;
     }
-    return -1;
+    throw SockException(Err_shutdown, StrPrinter << "no such track with type:" << (int) type);
 }
 inline int RtspSession::getTrackIndexByControlSuffix(const string &controlSuffix) {
     for (unsigned int i = 0; i < _aTrackInfo.size(); i++) {
@@ -1097,7 +1081,7 @@ inline int RtspSession::getTrackIndexByControlSuffix(const string &controlSuffix
     if(_aTrackInfo.size() == 1){
         return 0;
     }
-    return -1;
+    throw SockException(Err_shutdown, StrPrinter << "no such track with suffix:" << controlSuffix);
 }
 
 inline int RtspSession::getTrackIndexByInterleaved(int interleaved){
@@ -1109,7 +1093,7 @@ inline int RtspSession::getTrackIndexByInterleaved(int interleaved){
     if(_aTrackInfo.size() == 1){
         return 0;
     }
-    return -1;
+    throw SockException(Err_shutdown, StrPrinter << "no such track with interleaved:" << interleaved);
 }
 
 bool RtspSession::close(MediaSource &sender,bool force) {
@@ -1164,9 +1148,6 @@ void RtspSession::sendRtpPacket(const RtspMediaSource::RingDataType &pkt) {
 
 #if RTSP_SERVER_SEND_RTCP
     int iTrackIndex = getTrackIndexByTrackType(pkt->type);
-    if(iTrackIndex == -1){
-        return;
-    }
     RtcpCounter &counter = _aRtcpCnt[iTrackIndex];
     counter.pktCnt += 1;
     counter.octCount += (pkt->length - pkt->offset);

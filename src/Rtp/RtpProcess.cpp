@@ -16,32 +16,15 @@
 
 namespace mediakit{
 
-string printSSRC(uint32_t ui32Ssrc) {
-    char tmp[9] = { 0 };
-    ui32Ssrc = htonl(ui32Ssrc);
-    uint8_t *pSsrc = (uint8_t *) &ui32Ssrc;
-    for (int i = 0; i < 4; i++) {
-        sprintf(tmp + 2 * i, "%02X", pSsrc[i]);
-    }
-    return tmp;
-}
-
 static string printAddress(const struct sockaddr *addr){
     return StrPrinter << SockUtil::inet_ntoa(((struct sockaddr_in *) addr)->sin_addr) << ":" << ntohs(((struct sockaddr_in *) addr)->sin_port);
 }
 
-RtpProcess::RtpProcess(uint32_t ssrc) {
-    _ssrc = ssrc;
-    _track = std::make_shared<SdpTrack>();
-    _track->_interleaved = 0;
-    _track->_samplerate = 90000;
-    _track->_type = TrackVideo;
-    _track->_ssrc = _ssrc;
-
+RtpProcess::RtpProcess(const string &stream_id) {
     _media_info._schema = RTP_APP_NAME;
     _media_info._vhost = DEFAULT_VHOST;
     _media_info._app = RTP_APP_NAME;
-    _media_info._streamid = printSSRC(_ssrc);
+    _media_info._streamid = stream_id;
 
     GET_CONFIG(string,dump_dir,RtpProxy::kDumpDir);
     {
@@ -115,7 +98,7 @@ bool RtpProcess::inputRtp(const Socket::Ptr &sock, const char *data, int data_le
     }
 
     _total_bytes += data_len;
-    bool ret = handleOneRtp(0,_track,(unsigned char *)data,data_len);
+    bool ret = handleOneRtp(0, TrackVideo, 90000, (unsigned char *) data, data_len);
     if(dts_out){
         *dts_out = _dts;
     }
@@ -186,6 +169,16 @@ bool RtpProcess::alive() {
         return true;
     }
     return false;
+}
+
+void RtpProcess::onDetach(){
+    if(_on_detach){
+        _on_detach();
+    }
+}
+
+void RtpProcess::setOnDetach(const function<void()> &cb) {
+    _on_detach = cb;
 }
 
 string RtpProcess::get_peer_ip() {
