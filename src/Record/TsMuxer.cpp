@@ -12,6 +12,7 @@
 #if defined(ENABLE_HLS)
 #include "mpeg-ts-proto.h"
 #include "mpeg-ts.h"
+#include "Extension/H264.h"
 
 namespace mediakit {
 
@@ -72,6 +73,11 @@ void TsMuxer::addTrack(const Track::Ptr &track) {
             break;
         }
 
+        case CodecOpus: {
+            _codec_to_trackid[track->getCodecId()].track_id = mpeg_ts_add_stream(_context, PSI_STREAM_AUDIO_OPUS, nullptr, 0);
+            break;
+        }
+
         default: WarnL << "mpeg-ts 不支持该编码格式,已忽略:" << track->getCodecName(); break;
     }
 
@@ -89,8 +95,13 @@ void TsMuxer::inputFrame(const Frame::Ptr &frame) {
     int64_t dts_out, pts_out;
     _is_idr_fast_packet = !_have_video;
     switch (frame->getCodecId()){
-        case CodecH265:
         case CodecH264: {
+            int type = H264_TYPE(*((uint8_t *)frame->data() + frame->prefixSize()));
+            if(type == H264Frame::NAL_SEI){
+                break;
+            }
+        }
+        case CodecH265: {
             //这里的代码逻辑是让SPS、PPS、IDR这些时间戳相同的帧打包到一起当做一个帧处理，
             if (!_frameCached.empty() && _frameCached.back()->dts() != frame->dts()) {
                 Frame::Ptr back = _frameCached.back();

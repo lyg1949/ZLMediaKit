@@ -37,7 +37,7 @@ public:
     } NalType;
 
     H264Frame(){
-        _codecid = CodecH264;
+        _codec_id = CodecH264;
     }
 
     bool keyFrame() const override {
@@ -227,11 +227,6 @@ private:
                 VideoTrack::inputFrame(frame);
             }
                 break;
-
-            case H264Frame::NAL_SEI:{
-                //忽略SEI
-                break;
-            }
 
             default:
                 VideoTrack::inputFrame(frame);
