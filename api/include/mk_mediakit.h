@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2016 The ZLMediaKit project authors. All Rights Reserved.
  *
  * This file is part of ZLMediaKit(https://github.com/xiongziliang/ZLMediaKit).
@@ -22,5 +22,6 @@
 #include "mk_tcp.h"
 #include "mk_util.h"
 #include "mk_thread.h"
+#include "mk_websocket.h"
 
 #endif /* MK_API_H_ */
