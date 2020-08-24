@@ -24,7 +24,7 @@ API_EXPORT mk_sock_info API_CALL mk_websocket_session_get_sock_info(const mk_web
 API_EXPORT void API_CALL mk_websocket_session_shutdown(const mk_websocket_session ctx,int err,const char *err_msg){
     assert(ctx);
     WebsocketSessionForC *session = (WebsocketSessionForC *)ctx;
-    session->safeShutdown(SockException((ErrCode)err,err_msg));
+    session->shutdown(SockException((ErrCode)err,err_msg));
 }
 
 API_EXPORT void API_CALL mk_websocket_session_send(const mk_websocket_session ctx,int type,const char *data,int len){
