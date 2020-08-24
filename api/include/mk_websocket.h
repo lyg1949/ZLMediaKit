@@ -56,14 +56,14 @@ typedef struct {
      * @param data 数据指针
      * @param len 数据长度
      */
-    void (API_CALL *on_mk_websocket_session_data)(uint16_t server_port,mk_websocket_session session,int type,const char *data,int len);
+    void (API_CALL *on_mk_websocket_session_data)(uint16_t server_port,const char * url,mk_websocket_session session,int type,const char *data,int len);
 
     /**
      * 每隔2秒的定时器，用于管理超时等任务
      * @param server_port 服务器端口号
      * @param session 会话处理对象
      */
-    void (API_CALL *on_mk_websocket_session_manager)(uint16_t server_port,mk_websocket_session session);
+    void (API_CALL *on_mk_websocket_session_manager)(uint16_t server_port,const char * url,mk_websocket_session session);
 
     /**
      * 一般由于客户端断开tcp触发
@@ -72,7 +72,7 @@ typedef struct {
      * @param code 错误代码
      * @param msg 错误提示
      */
-    void (API_CALL *on_mk_websocket_session_disconnect)(uint16_t server_port,mk_websocket_session session,int code,const char *msg);
+    void (API_CALL *on_mk_websocket_session_disconnect)(uint16_t server_port,const char * url,mk_websocket_session session,int code,const char *msg);
 } mk_websocket_session_events;
 
 

@@ -52,20 +52,20 @@ void WebsocketSessionForC::onRecv(const Buffer::Ptr &buffer) {
         auto wbs = wb.lock();
         if(wbs)
         {
-            s_events_server.on_mk_websocket_session_data(_local_port,this,wbs->headType(), wbs->data(), wbs->size());
+            s_events_server.on_mk_websocket_session_data(_local_port,_header.Url().c_str(),this,wbs->headType(), wbs->data(), wbs->size());
         }
     }
 }
 
 void WebsocketSessionForC::onError(const SockException &err) {
     if (s_events_server.on_mk_websocket_session_disconnect) {
-        s_events_server.on_mk_websocket_session_disconnect(_local_port,this, err.getErrCode(), err.what());
+        s_events_server.on_mk_websocket_session_disconnect(_local_port,_header.Url().c_str(),this, err.getErrCode(), err.what());
     }
 }
 
 void WebsocketSessionForC::onManager() {
     if (s_events_server.on_mk_websocket_session_manager) {
-        s_events_server.on_mk_websocket_session_manager(_local_port,this);
+        s_events_server.on_mk_websocket_session_manager(_local_port,_header.Url().c_str(),this);
     }
 }
 
