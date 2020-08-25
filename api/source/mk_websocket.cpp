@@ -27,10 +27,38 @@ API_EXPORT void API_CALL mk_websocket_session_shutdown(const mk_websocket_sessio
     session->shutdown(SockException((ErrCode)err,err_msg));
 }
 
+API_EXPORT void API_CALL mk_websocket_session_safe_shutdown(const mk_websocket_session ctx,int err,const char *err_msg){
+    assert(ctx);
+    try {
+        WebsocketSessionForC *session = (WebsocketSessionForC *)ctx;
+        session->safeShutdown(SockException((ErrCode)err,err_msg));
+    }catch (std::exception &ex){
+        WarnL << "mk_websocket_session_safe_shutdown Exception:" << ex.what();
+    }
+}
+
 API_EXPORT void API_CALL mk_websocket_session_send(const mk_websocket_session ctx,int type,const char *data,int len){
     assert(ctx && data);
     WebsocketSessionForC *session = (WebsocketSessionForC *)ctx;
     session->sendData(type,data,len);
+}
+
+API_EXPORT void API_CALL mk_websocket_session_send_safe(const mk_websocket_session ctx,int type,const char *data,int len){
+    assert(ctx && data);
+    if(!len){
+        len = strlen(data);
+    }
+    try {
+        weak_ptr<WebsocketSessionForC> weak_session = dynamic_pointer_cast<WebsocketSessionForC>(((WebsocketSessionForC *)ctx)->shared_from_this());
+        ((WebsocketSessionForC *)ctx)->async([weak_session,type,data,len](){
+            auto session_session = weak_session.lock();
+            if(session_session){
+                session_session->sendData(type,data,len);
+            }
+        });
+    }catch (std::exception &ex){
+        WarnL << "mk_websocket_session_send_safe:" << ex.what();
+    }
 }
 
 
@@ -99,11 +127,9 @@ API_EXPORT uint16_t API_CALL mk_websocket_server_start(uint16_t port, mk_websock
         s_websocket_server[type] = std::make_shared<TcpServer>();
         switch (type) {
             case mk_websocket_type_ws:
-                //此处你也可以修改WebSocketHeader::BINARY
                 s_websocket_server[type]->start<WebSocketSessionPrivate<WebsocketSessionCreator, HttpSession> >(port);
                 break;
             case mk_websocket_type_wss:
-                //此处你也可以修改WebSocketHeader::BINARY
                 s_websocket_server[type]->start<WebSocketSessionPrivate<WebsocketSessionCreator, HttpsSession> >(port);
                 break;
             default:

@@ -19,7 +19,8 @@ typedef void* mk_websocket_session;
 //获取基类指针以便获取其网络相关信息
 API_EXPORT mk_sock_info API_CALL mk_websocket_session_get_sock_info(const mk_websocket_session ctx);
 
-//TcpSession::safeShutdown()
+//TcpSession::safeShutdown(),不能在on_mk_websocket_session_create和on_mk_websocket_session_auth中调用safe方法
+API_EXPORT void API_CALL mk_websocket_session_safe_shutdown(const mk_websocket_session ctx,int err,const char *err_msg);
 API_EXPORT void API_CALL mk_websocket_session_shutdown(const mk_websocket_session ctx,int err,const char *err_msg);
 //TcpSession::send(),type=1为text，2为binary
 API_EXPORT void API_CALL mk_websocket_session_send(const mk_websocket_session ctx,int type,const char *data,int len);

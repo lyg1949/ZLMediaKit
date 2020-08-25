@@ -77,7 +77,6 @@ class WebsocketSessionCreator {
 public:
     //返回的TcpSession必须派生于SendInterceptor2，可以返回null
     WebsocketSessionForC::Ptr operator()(const Parser &header, const HttpSession &parent, const Socket::Ptr &pSock){
-        ///TODO:在这里先进行权限认证
         if(s_events_server.on_mk_websocket_session_auth)
         {
             if(s_events_server.on_mk_websocket_session_auth(pSock->get_local_port(),header.Url().c_str(),header.Params().c_str())<0)
