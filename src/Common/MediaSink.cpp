@@ -36,7 +36,7 @@ void MediaSink::addTrack(const Track::Ptr &track_in) {
             onTrackFrame(frame);
         } else {
             //还有Track未就绪，先缓存之
-            _frame_unread[frame->getCodecId()].emplace_back(Frame::getCacheAbleFrame(frame));
+           // _frame_unread[frame->getCodecId()].emplace_back(Frame::getCacheAbleFrame(frame));
         }
     }));
 }
@@ -82,11 +82,11 @@ void MediaSink::checkTrackIfReady(const Track::Ptr &track){
     }
 
     if(!_all_track_ready){
-        if(_ticker.elapsedTime() > MAX_WAIT_MS_READY){
-            //如果超过规定时间，那么不再等待并忽略未准备好的Track
-            emitAllTrackReady();
-            return;
-        }
+        // if(_ticker.elapsedTime() > MAX_WAIT_MS_READY){
+        //     //如果超过规定时间，那么不再等待并忽略未准备好的Track
+        //     emitAllTrackReady();
+        //     return;
+        // }
 
         if(!_track_ready_callback.empty()){
             //在超时时间内，如果存在未准备好的Track，那么继续等待

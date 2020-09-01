@@ -167,6 +167,16 @@ API_EXPORT void API_CALL mk_player_pause(mk_player ctx, int pause) {
     });
 }
 
+API_EXPORT void API_CALL mk_player_stop(mk_player ctx) {
+    assert(ctx);
+    MediaPlayerForC &obj = **((MediaPlayerForC::Ptr *)ctx);
+    auto player = obj.getPlayer();
+    player->getPoller()->async([player](){
+        //切换线程后再操作
+        player->teardown();
+    });
+}
+
 API_EXPORT void API_CALL mk_player_seekto(mk_player ctx, float progress) {
     assert(ctx);
     MediaPlayerForC &obj = **((MediaPlayerForC::Ptr *)ctx);

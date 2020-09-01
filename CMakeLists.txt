@@ -1,7 +1,7 @@
 project(ZLMediaKit)
 cmake_minimum_required(VERSION 3.1.3)
 #交叉编译
-SET(CMAKE_SYSTEM_PROCESSOR arm)
+#SET(CMAKE_SYSTEM_PROCESSOR arm)
 #使能c++11
 set(CMAKE_CXX_STANDARD 11)
 #加载自定义模块

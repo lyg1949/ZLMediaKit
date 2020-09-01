@@ -74,6 +74,12 @@ API_EXPORT void API_CALL mk_player_play(mk_player ctx, const char *url);
 API_EXPORT void API_CALL mk_player_pause(mk_player ctx, int pause);
 
 /**
+ * 停止播放
+ * @param ctx 播放器指针
+ */
+API_EXPORT void API_CALL mk_player_stop(mk_player ctx);
+
+/**
  * 设置点播进度条
  * @param ctx 对象指针
  * @param progress 取值范围未 0.0～1.0
