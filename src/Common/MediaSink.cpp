@@ -28,16 +28,17 @@ void MediaSink::addTrack(const Track::Ptr &track_in) {
     _all_track_ready = false;
     _track_ready_callback[codec_id] = [this, track]() {
         onTrackReady(track);
+        onAllTrackReady();//commited by lyg1949
     };
     _ticker.resetTime();
 
     track->addDelegate(std::make_shared<FrameWriterInterfaceHelper>([this](const Frame::Ptr &frame) {
-        if (_all_track_ready) {
+        //if (_all_track_ready) {//commited by lyg1949
             onTrackFrame(frame);
-        } else {
-            //还有Track未就绪，先缓存之
+        //} else {
+            //还有Track未就绪，先缓存之//commited by lyg1949
            // _frame_unread[frame->getCodecId()].emplace_back(Frame::getCacheAbleFrame(frame));
-        }
+        //}
     }));
 }
 
@@ -82,6 +83,7 @@ void MediaSink::checkTrackIfReady(const Track::Ptr &track){
     }
 
     if(!_all_track_ready){
+        //commited by lyg1949
         // if(_ticker.elapsedTime() > MAX_WAIT_MS_READY){
         //     //如果超过规定时间，那么不再等待并忽略未准备好的Track
         //     emitAllTrackReady();
@@ -98,12 +100,12 @@ void MediaSink::checkTrackIfReady(const Track::Ptr &track){
             emitAllTrackReady();
             return;
         }
-
-        if(_track_map.size() == 1 && _ticker.elapsedTime() > MAX_WAIT_MS_ADD_TRACK){
-            //如果只有一个Track，那么在该Track添加后，我们最多还等待若干时间(可能后面还会添加Track)
-            emitAllTrackReady();
-            return;
-        }
+        //commited by lyg1949
+        // if(_track_map.size() == 1 && _ticker.elapsedTime() > MAX_WAIT_MS_ADD_TRACK){
+        //     //如果只有一个Track，那么在该Track添加后，我们最多还等待若干时间(可能后面还会添加Track)
+        //     emitAllTrackReady();
+        //     return;
+        // }
     }
 }
 

@@ -29,7 +29,7 @@ typedef void *mk_proxy_player;
  * @param mp4_enabled 是否生成mp4
  * @return 对象指针
  */
-API_EXPORT mk_proxy_player API_CALL mk_proxy_player_create(const char *vhost, const char *app, const char *stream, int hls_enabled, int mp4_enabled);
+API_EXPORT mk_proxy_player API_CALL mk_proxy_player_create(const char *vhost, const char *app, const char *stream, int hls_enabled, int mp4_enabled,int retry_count);
 
 /**
  * 销毁代理播放器
