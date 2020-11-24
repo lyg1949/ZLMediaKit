@@ -58,6 +58,7 @@ private:
     RtspMediaSourceMuxer::Ptr _rtsp;
     HlsRecorder::Ptr _hls;
     MediaSinkInterface::Ptr _mp4;
+    MediaSinkInterface::Ptr _audio;
     TSMediaSourceMuxer::Ptr _ts;
 #if defined(ENABLE_MP4)
     FMP4MediaSourceMuxer::Ptr _fmp4;
