@@ -20,7 +20,7 @@ MultiMuxerPrivate::MultiMuxerPrivate(const string &vhost, const string &app, con
                                      bool enable_rtsp, bool enable_rtmp, bool enable_hls, bool enable_mp4) {
     _stream_url = vhost + " " + app + " " + stream;
     if (enable_rtmp) {
-        _rtmp = std::make_shared<RtmpMediaSourceMuxer>(vhost, app, stream, std::make_shared<TitleMeta>(dur_sec));
+        //_rtmp = std::make_shared<RtmpMediaSourceMuxer>(vhost, app, stream, std::make_shared<TitleMeta>(dur_sec));
     }
     if (enable_rtsp) {
         _rtsp = std::make_shared<RtspMediaSourceMuxer>(vhost, app, stream, std::make_shared<TitleSdp>(dur_sec));
@@ -34,10 +34,10 @@ MultiMuxerPrivate::MultiMuxerPrivate(const string &vhost, const string &app, con
         _mp4 = Recorder::createRecorder(Recorder::type_mp4, vhost, app, stream);
     }
 
-    _ts = std::make_shared<TSMediaSourceMuxer>(vhost, app, stream);
+    //_ts = std::make_shared<TSMediaSourceMuxer>(vhost, app, stream);
 
 #if defined(ENABLE_MP4)
-    _fmp4 = std::make_shared<FMP4MediaSourceMuxer>(vhost, app, stream);
+    //_fmp4 = std::make_shared<FMP4MediaSourceMuxer>(vhost, app, stream);
 #endif
 }
 
