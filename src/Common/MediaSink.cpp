@@ -20,10 +20,11 @@ namespace mediakit{
 
 void MediaSink::addTrack(const Track::Ptr &track_in) {
     lock_guard<recursive_mutex> lck(_mtx);
-    if (_all_track_ready) {
-        WarnL << "all track is ready, add this track too late!";
-        return;
-    }
+    // if (_all_track_ready) {
+    //     WarnL << "all track is ready, add this track too late!";
+    //     return;
+    // }
+    _all_track_ready = false;
     //克隆Track，只拷贝其数据，不拷贝其数据转发关系
     auto track = track_in->clone();
     auto codec_id = track->getCodecId();
