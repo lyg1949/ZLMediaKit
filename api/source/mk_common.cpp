@@ -76,6 +76,7 @@ API_EXPORT void API_CALL mk_env_init1(int thread_num,
         if(log_file_path && log_file_days){
             //日志文件
             auto channel = std::make_shared<FileChannel>("FileChannel", File::absolutePath(log_file_path, ""), (LogLevel) log_level);
+            channel->setMaxDay(log_file_days);
             Logger::Instance().add(channel);
         }
 
